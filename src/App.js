@@ -1,14 +1,19 @@
 import React, {Component} from 'react';
+import "./Style.css";
+import TruthTable from "./TruthTable";
 
 class App extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            value: '',
+            parsed: [],
+            literals: new Set()
         };
 
-        this.handleUpload = this.handleUpload.bind(this);
-        this.handleDownload = this.handleDownload.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     // Changes the background color to light purple when website first starts.
@@ -16,29 +21,53 @@ class App extends Component {
         document.body.style.backgroundColor = "#D8BFD8"
     }
 
-    handleUpload = () => {
-        alert("Upload clicked")
+    handleChange(event) {
+        this.setState({value: event.target.value});
     }
 
-    handleDownload = () => {
-        let element = document.createElement("a");
-        element.click();
+    handleSubmit = (event) => {
+        let value = event.target.value;
+        let parsed = this.parseValue(value);
+        this.setState(
+            {value: value,
+                parsed: parsed,
+                literals: this.getLiterals(parsed)},
+        );
+    }
+
+    parseValue = (value) => {
+        let result = []
+        for (let i = 0; i < value.length; i++) {
+            result[i] = value.charAt(i);
+        }
+        return result;
     };
+
+    getLiterals = (parsed) => {
+        let result = new Set();
+        for (let i = 0; i < parsed.length; i++) {
+            if (parsed[i].charCodeAt(0) >= 65 &&
+                parsed[i].charCodeAt(0) <= 90) {
+                result.add(parsed[i]);
+            }
+        }
+        return result;
+    }
 
     render() {
         return (
             <div align="center">
-                <button onClick={() => {
-                    this.handleUpload();
-                }}><font size="4">Upload</font>
-                </button>
+                <b><font size="6">Simply Logic</font></b>
                 <br/>
+                <p><font size="4">Enter a sentence you want to
+                generate a truth table for:</font></p>
+                <form onSubmit={this.handleSubmit}>
+                    <input type="text" value={this.state.value} onChange={this.handleChange}/>
+                    <input type="submit" value="Submit" />
+                </form>
                 <br/>
-                <a href="http://localhost:3000/static/media/uw.48d20167.jpg"
-                   download
-                   onClick={() => this.handleDownload()}>
-                    <button><font size="4">Download</font></button>
-                </a>
+                <TruthTable literals={this.state.literals}/>
+                <br/>
                 <br/>
             </div>
         );
