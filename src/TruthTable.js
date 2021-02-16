@@ -21,13 +21,9 @@ class TruthTable extends Component {
 
     drawTruthTable = (value, parsed, literals) => {
         if (literals !== null) {
-            const itr = literals.values();
-            let literal = itr.next();
-            while (!literal.done) {
-                this.writeText({text: literal.value, x: 180, y: 70});
-                literal = itr.next();
-            }
-            let ctx = this.canvas.current.getContext('2d');
+            let canvas = this.canvas.current;
+            let ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.strokeStyle = 'black';
             let numLiterals = 2;
             let numSpaces = numLiterals + 1;
@@ -53,6 +49,14 @@ class TruthTable extends Component {
             ctx.lineTo(endX, endY);
             ctx.lineWidth = 2;
             ctx.stroke();
+            const itr = literals.values();
+            let literal = itr.next();
+            let x = topLeft + 45;
+            while (!literal.done) {
+                this.writeText({text: literal.value, x: x, y: 5});
+                literal = itr.next();
+                x += 95;
+            }
         }
     };
 
