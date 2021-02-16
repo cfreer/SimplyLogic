@@ -12,7 +12,7 @@ class TruthTable extends Component {
     }
 
     componentDidMount() {
-        this.drawTruthTable(this.props.value, this.props.parsed, this.props.literals);
+        //this.drawTruthTable(this.props.value, this.props.parsed, this.props.literals);
     }
 
     componentDidUpdate() {
@@ -20,12 +20,12 @@ class TruthTable extends Component {
     }
 
     drawTruthTable = (value, parsed, literals) => {
-        if (literals !== null) {
+        if (this.props.submitted && literals !== null) {
             let canvas = this.canvas.current;
             let ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.strokeStyle = 'black';
-            let numLiterals = 2;
+            let numLiterals = literals.size;
             let numSpaces = numLiterals + 1;
             let topLeft = (this.state.width - numSpaces * 100) / 2;
             let firstLineX = topLeft + 100;
@@ -57,6 +57,7 @@ class TruthTable extends Component {
                 literal = itr.next();
                 x += 95;
             }
+            this.writeText({text: value, x: x, y: 5});
         }
     };
 

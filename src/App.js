@@ -10,7 +10,8 @@ class App extends Component {
         this.state = {
             value: '',
             parsed: [],
-            literals: null
+            literals: null,
+            submitted: false
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -23,7 +24,7 @@ class App extends Component {
     }
 
     handleChange(event) {
-        this.setState({value: event.target.value});
+        this.setState({value: event.target.value, submitted: false});
     }
 
     handleSubmit() {
@@ -31,7 +32,7 @@ class App extends Component {
         let parsed = this.parseValue(value);
         let literals = this.getLiterals(parsed);
         this.setState({parsed: parsed,
-            literals: literals});
+            literals: literals, submitted: true});
     }
 
     parseValue = (value) => {
@@ -66,7 +67,8 @@ class App extends Component {
                 }}><font size="3">Submit</font>
                 </button>
                 <br/>
-                <TruthTable value={this.state.value} parsed={this.state.parsed} literals={this.state.literals} />
+                <TruthTable value={this.state.value} parsed={this.state.parsed}
+                            literals={this.state.literals} submitted={this.state.submitted}/>
                 <br/>
                 <br/>
             </div>
