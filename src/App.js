@@ -31,8 +31,10 @@ class App extends Component {
         let value = this.state.value;
         let parsed = this.parseValue(value);
         let literals = this.getLiterals(parsed);
-        this.setState({parsed: parsed,
-            literals: literals, submitted: true});
+        this.setState({
+            parsed: parsed,
+            literals: literals, submitted: true
+        });
     }
 
     parseValue = (value) => {
@@ -60,7 +62,7 @@ class App extends Component {
                 <b><font size="6">Simply Logic</font></b>
                 <br/>
                 <p><font size="4">Enter a sentence you want to
-                generate a truth table for:</font></p>
+                    generate a truth table for:</font></p>
                 <TextBox handleChange={this.handleChange} value={this.state.value}/>
                 <button onClick={() => {
                     this.handleSubmit();
