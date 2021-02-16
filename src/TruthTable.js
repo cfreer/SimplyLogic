@@ -11,10 +11,6 @@ class TruthTable extends Component {
         this.canvas = React.createRef();
     }
 
-    componentDidMount() {
-        //this.drawTruthTable(this.props.value, this.props.parsed, this.props.literals);
-    }
-
     componentDidUpdate() {
         this.drawTruthTable(this.props.value, this.props.parsed, this.props.literals);
     }
@@ -42,7 +38,13 @@ class TruthTable extends Component {
             }
             let startX = topLeft;
             let startY = 30;
-            let endX = startX + 100 * numSpaces;
+            let valueSpace = 10 * value.length + 50;
+            let endX = startX + 100 * numLiterals
+            if (valueSpace > 100) {
+                endX += valueSpace;
+            } else {
+                endX += 100;
+            }
             let endY = startY;
             ctx.beginPath();
             ctx.moveTo(startX, startY);
@@ -55,7 +57,13 @@ class TruthTable extends Component {
             while (!literal.done) {
                 this.writeText({text: literal.value, x: x, y: 5});
                 literal = itr.next();
-                x += 95;
+                x += 98;
+            }
+            if (valueSpace > 100) {
+                x -= 20;
+            } else {
+                x -= 47;
+                x += (100 - 10 * value.length) / 2;
             }
             this.writeText({text: value, x: x, y: 5});
         }

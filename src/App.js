@@ -8,6 +8,7 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            textValue: '',
             value: '',
             parsed: [],
             literals: null,
@@ -24,7 +25,8 @@ class App extends Component {
     }
 
     handleChange(event) {
-        this.setState({value: event.target.value, submitted: false});
+        this.setState({value: event.target.value,
+            textValue: event.target.value, submitted: false});
     }
 
     handleSubmit() {
@@ -32,6 +34,7 @@ class App extends Component {
         let parsed = this.parseValue(value);
         let literals = this.getLiterals(parsed);
         this.setState({
+            textValue: '',
             parsed: parsed,
             literals: literals, submitted: true
         });
@@ -63,7 +66,7 @@ class App extends Component {
                 <br/>
                 <p><font size="4">Enter a sentence you want to
                     generate a truth table for:</font></p>
-                <TextBox handleChange={this.handleChange} value={this.state.value}/>
+                <TextBox handleChange={this.handleChange} value={this.state.textValue}/>
                 <button onClick={() => {
                     this.handleSubmit();
                 }}><font size="3">Submit</font>
