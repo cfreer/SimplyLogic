@@ -79,19 +79,6 @@ class TruthTable extends Component {
             }
         }
         let result = values.get(localParsed[0]);
-        // for (let i = 0; i < localParsed.length; i++) {
-        //     let c = localParsed[i];
-        //     if (c === "&") {
-        //         result = this.and(values.get(localParsed[i - 1]),
-        //             values.get(localParsed[i + 1]));
-        //         console.log(result)
-        //     } else if (c === "v") {
-        //         result = this.or(values.get(localParsed[i - 1]),
-        //             values.get(localParsed[i + 1]));
-        //     } else if (c === "~") {
-        //         result = this.not(values.get(localParsed[i + 1]));
-        //     }
-        // }
         if (result) {
             this.writeText({text: 'T', x: middle, y: y});
         } else {

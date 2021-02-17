@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import "./Style.css";
 import TruthTable from "./TruthTable";
 import TextBox from "./TextBox";
+let bool = ["&", "v", "~"]
 
 class App extends Component {
 
@@ -30,13 +31,16 @@ class App extends Component {
     }
 
     handleSubmit() {
+        this.setState({
+            submitted: true
+        })
         let value = this.state.value;
         let parsed = this.parseValue(value);
         let literals = this.getLiterals(parsed);
         this.setState({
             textValue: '',
             parsed: parsed,
-            literals: literals, submitted: true
+            literals: literals
         });
     }
 
@@ -51,13 +55,32 @@ class App extends Component {
     getLiterals = (parsed) => {
         let result = new Set();
         for (let i = 0; i < parsed.length; i++) {
-            if (parsed[i].charCodeAt(0) >= 65 &&
-                parsed[i].charCodeAt(0) <= 90) {
-                result.add(parsed[i]);
+            let c = parsed[i];
+            console.log(c)
+            if (c.charCodeAt(0) >= 65 &&
+                c.charCodeAt(0) <= 90) {
+                result.add(c);
+            } else if (!bool.includes(c)) {
+                this.throwError();
             }
         }
         return result;
     };
+
+    throwError = () => {
+        this.reset();
+        alert("Incorrect format.");
+    }
+
+    reset = () => {
+        this.setState({
+            textValue: '',
+            value: '',
+            parsed: [],
+            literals: null,
+            submitted: false
+        });
+    }
 
     render() {
         return (
