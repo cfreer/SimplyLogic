@@ -25,11 +25,12 @@ class TruthTable extends Component {
             let numSpaces = numLiterals + 1;
             let topLeft = (this.state.width - numSpaces * 100) / 2;
             let firstLineX = topLeft + 100;
+            let rows = Math.pow(2, numLiterals);
             for (let i = 0; i < numLiterals; i++) {
                 let startX = firstLineX + 100 * i;
                 let startY = 0;
                 let endX = startX;
-                let endY = startY + 200;
+                let endY = startY + (rows + 1) * 30 + 10;
                 ctx.beginPath();
                 ctx.moveTo(startX, startY);
                 ctx.lineTo(endX, endY);
@@ -54,6 +55,7 @@ class TruthTable extends Component {
             const itr = literals.values();
             let literal = itr.next();
             let x = topLeft + 45;
+            let firstX = x;
             while (!literal.done) {
                 this.writeText({text: literal.value, x: x, y: 5});
                 literal = itr.next();
@@ -66,6 +68,23 @@ class TruthTable extends Component {
                 x += (100 - 10 * value.length) / 2;
             }
             this.writeText({text: value, x: x, y: 5});
+            // writes truth values
+            let y = 15;
+            // row
+            for (let i = 0; i < rows; i++) {
+                y += 30;
+                // col
+                for (let j = 0; j < numLiterals; j++) {
+                    let divisor = Math.pow(2, numLiterals - j - 1);
+                    let group = Math.floor(i / divisor);
+                    // first half of rows
+                    if (group % 2 === 0) {
+                        this.writeText({text: 'T', x: firstX + 98 * j, y: y});
+                    } else {
+                        this.writeText({text: 'F', x: firstX + 98 * j, y: y});
+                    }
+                }
+            }
         }
     };
 

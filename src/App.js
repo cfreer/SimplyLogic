@@ -72,6 +72,7 @@ class App extends Component {
                 }}><font size="3">Submit</font>
                 </button>
                 <br/>
+                <br/>
                 <TruthTable value={this.state.value} parsed={this.state.parsed}
                             literals={this.state.literals} submitted={this.state.submitted}/>
                 <br/>
