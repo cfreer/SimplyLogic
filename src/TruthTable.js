@@ -49,19 +49,49 @@ class TruthTable extends Component {
     };
 
     writeResult = (y) => {
-        let result = false;
-        for (let i = 0; i < parsed.length; i++) {
-            let c = parsed[i];
-            if (c === "&") {
-                result = this.and(values.get(parsed[i - 1]),
-                    values.get(parsed[i + 1]));
-            } else if (c === "v") {
-                result = this.or(values.get(parsed[i - 1]),
-                    values.get(parsed[i + 1]));
-            } else if (c === "~") {
-                result = this.not(values.get(parsed[i + 1]));
+        // copies parsed
+        let localParsed = [...parsed];
+        // looks for narrow scope ~
+        while (localParsed.length > 1) {
+            console.log(localParsed)
+            for (let i = 0; i < localParsed.length; i++) {
+                let c = localParsed[i];
+                let prev = localParsed[i - 1];
+                let next = localParsed[i + 1];
+                if (values.has(next)) {
+                    if (c === "~") {
+                        let combined = '' + c + next;
+                        values.set(combined, this.not(values.get(next)))
+                        localParsed[i + 1] = combined;
+                        localParsed.splice(i, 1);
+                    } else if (c === "&") {
+                        let combined = '' + prev + c + next;
+                        values.set(combined, this.and(values.get(prev), values.get(next)));
+                        localParsed[i + 1] = combined;
+                        localParsed.splice(i - 1, 2);
+                    } else if (c === "v") {
+                        let combined = '' + prev + c + next;
+                        values.set(combined, this.or(values.get(prev), values.get(next)));
+                        localParsed[i + 1] = combined;
+                        localParsed.splice(i - 1, 2);
+                    }
+                }
             }
         }
+        let result = values.get(localParsed[0]);
+        // for (let i = 0; i < localParsed.length; i++) {
+        //     let c = localParsed[i];
+        //     if (c === "&") {
+        //         result = this.and(values.get(localParsed[i - 1]),
+        //             values.get(localParsed[i + 1]));
+        //         console.log(result)
+        //     } else if (c === "v") {
+        //         result = this.or(values.get(localParsed[i - 1]),
+        //             values.get(localParsed[i + 1]));
+        //     } else if (c === "~") {
+        //         result = this.not(values.get(localParsed[i + 1]));
+        //     }
+        // }
         if (result) {
             this.writeText({text: 'T', x: middle, y: y});
         } else {
@@ -159,8 +189,6 @@ class TruthTable extends Component {
     }
 
     and = (x, y) => {
-        console.log(x);
-        console.log(y);
         return x && y;
     }
 
