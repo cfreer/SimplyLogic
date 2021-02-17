@@ -34,10 +34,12 @@ class App extends Component {
         this.setState({
             submitted: true
         })
-        let value = this.state.value;
+        let value = this.state.value.toUpperCase()
+        value = value.replace("V", "v");
         let parsed = this.parseValue(value);
         let literals = this.getLiterals(parsed);
         this.setState({
+            value: value,
             textValue: '',
             parsed: parsed,
             literals: literals

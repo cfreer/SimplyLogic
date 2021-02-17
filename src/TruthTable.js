@@ -87,14 +87,10 @@ class TruthTable extends Component {
     }
 
     writeLiterals = () => {
-        literalList = [];
-        const itr = literals.values();
-        let literal = itr.next();
+        literalList = Array.from(literals).sort();
         let x = topLeft + 45;
-        while (!literal.done) {
-            this.writeText({text: literal.value, x: x, y: 5});
-            literalList.push(literal.value);
-            literal = itr.next();
+        for (let i = 0; i < literalList.length; i++) {
+            this.writeText({text: literalList[i], x: x, y: 5});
             x += 98;
         }
         if (valueSpace > 100) {
