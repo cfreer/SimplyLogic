@@ -58,20 +58,32 @@ class TruthTable extends Component {
                 let c = localParsed[i];
                 let prev = localParsed[i - 1];
                 let next = localParsed[i + 1];
+                if (prev === "(" && next === ")") {
+                    let combined = '' + prev + c + next;
+                    values.set(combined, values.get(c));
+                    localParsed[i + 1] = combined;
+                    localParsed.splice(i - 1, 2);
+                }
                 if (values.has(next)) {
                     if (c === "~") {
                         let combined = '' + c + next;
-                        values.set(combined, this.not(values.get(next)))
+                        values.set(combined, this.not(values.get(next)));
                         localParsed[i + 1] = combined;
                         localParsed.splice(i, 1);
-                    } else if (c === "&") {
+                    }
+                    if (values.has(prev)) {
                         let combined = '' + prev + c + next;
-                        values.set(combined, this.and(values.get(prev), values.get(next)));
-                        localParsed[i + 1] = combined;
-                        localParsed.splice(i - 1, 2);
-                    } else if (c === "v") {
-                        let combined = '' + prev + c + next;
-                        values.set(combined, this.or(values.get(prev), values.get(next)));
+                        let prevVal = values.get(prev);
+                        let nextVal = values.get(next);
+                        if (c === "&") {
+                            values.set(combined, this.and(prevVal, nextVal));
+                        } else if (c === "v") {
+                            values.set(combined, this.or(prevVal, nextVal));
+                        } else if (c === "->") {
+                            values.set(combined, this.conditional(prevVal, nextVal));
+                        } else if (c === "<->") {
+                            values.set(combined, this.biconditional(prevVal, nextVal));
+                        }
                         localParsed[i + 1] = combined;
                         localParsed.splice(i - 1, 2);
                     }
@@ -181,6 +193,14 @@ class TruthTable extends Component {
 
     not = (x) => {
         return !x;
+    }
+
+    conditional = (x, y) => {
+        return this.or(this.not(x), y);
+    }
+
+    biconditional = (x, y) => {
+        return x === y;
     }
 
     render() {

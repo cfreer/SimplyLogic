@@ -2,7 +2,8 @@ import React, {Component} from 'react';
 import "./Style.css";
 import TruthTable from "./TruthTable";
 import TextBox from "./TextBox";
-let bool = ["&", "v", "~"]
+
+let bool = ["&", "v", "~", "(", ")", "->", "<->"]
 
 class App extends Component {
 
@@ -26,8 +27,10 @@ class App extends Component {
     }
 
     handleChange(event) {
-        this.setState({value: event.target.value,
-            textValue: event.target.value, submitted: false});
+        this.setState({
+            value: event.target.value,
+            textValue: event.target.value, submitted: false
+        });
     }
 
     handleSubmit() {
@@ -47,9 +50,25 @@ class App extends Component {
     }
 
     parseValue = (value) => {
-        let result = []
+        let result = [];
+        let index = 0;
         for (let i = 0; i < value.length; i++) {
-            result[i] = value.charAt(i);
+            let c = value.charAt(i);
+            // next 2 chars
+            let next2 = '' + c + value.charAt(i + 1);
+            // next 3 chars
+            let next3 = '' + next2 + value.charAt(i + 2);
+            if (next2 === "->") {
+                result[index] = next2;
+                i++;
+            } else if (next3 === "<->") {
+                result[index] = next3;
+                i += 2;
+            }
+            else {
+                result[index] = c;
+            }
+            index++;
         }
         return result;
     };
@@ -58,7 +77,6 @@ class App extends Component {
         let result = new Set();
         for (let i = 0; i < parsed.length; i++) {
             let c = parsed[i];
-            console.log(c)
             if (c.charCodeAt(0) >= 65 &&
                 c.charCodeAt(0) <= 90) {
                 result.add(c);
@@ -90,7 +108,7 @@ class App extends Component {
                 <b><font size="6">Simply Logic</font></b>
                 <br/>
                 <p><font size="4">
-                    Key: and: &, or: v, not: ~ <br/>
+                    Key: and: &, or: v, not: ~, conditional: ->, biconditional: &lt;-> <br/>
                     Enter a sentence you want to
                     generate a truth table for:
                 </font></p>
