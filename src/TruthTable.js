@@ -23,10 +23,10 @@ class TruthTable extends Component {
     }
 
     drawTruthTable = () => {
-        if (this.props.submitted && literals !== null) {
+        let canvas = this.canvas.current;
+        ctx = canvas.getContext('2d');
+        if (this.props.submitted && literals.size > 0) {
             numLiterals = literals.size;
-            let canvas = this.canvas.current;
-            ctx = canvas.getContext('2d');
             // clears drawing board
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.strokeStyle = 'black';
@@ -45,15 +45,16 @@ class TruthTable extends Component {
             this.writeTruthValues();
 
             this.writeResult();
+        } else if (this.props.submitted) {
+            ctx.clearRect(0, 0, this.state.width, this.state.height);
         }
     };
 
     writeResult = (y) => {
         // copies parsed
         let localParsed = [...parsed];
-        // looks for narrow scope ~
+        // looks for narrowest scope
         while (localParsed.length > 1) {
-            console.log(localParsed)
             for (let i = 0; i < localParsed.length; i++) {
                 let c = localParsed[i];
                 let prev = localParsed[i - 1];

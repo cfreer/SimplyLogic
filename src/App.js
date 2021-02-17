@@ -89,6 +89,9 @@ class App extends Component {
 
     throwError = () => {
         this.reset();
+        this.setState({
+            submitted: true
+        });
         alert("Incorrect format.");
     }
 
