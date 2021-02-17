@@ -49,9 +49,23 @@ class TruthTable extends Component {
     };
 
     writeResult = (y) => {
-        this.writeText({text: 'T', x: middle, y: y});
-        for (let i = 0; i < rows; i++) {
-
+        let result = false;
+        for (let i = 0; i < parsed.length; i++) {
+            let c = parsed[i];
+            if (c === "&") {
+                result = this.and(values.get(parsed[i - 1]),
+                    values.get(parsed[i + 1]));
+            } else if (c === "v") {
+                result = this.or(values.get(parsed[i - 1]),
+                    values.get(parsed[i + 1]));
+            } else if (c === "~") {
+                result = this.not(values.get(parsed[i + 1]));
+            }
+        }
+        if (result) {
+            this.writeText({text: 'T', x: middle, y: y});
+        } else {
+            this.writeText({text: 'F', x: middle, y: y});
         }
     }
 
@@ -62,8 +76,8 @@ class TruthTable extends Component {
         let x = topLeft + 45;
         while (!literal.done) {
             this.writeText({text: literal.value, x: x, y: 5});
+            literalList.push(literal.value);
             literal = itr.next();
-            literalList.push(literal);
             x += 98;
         }
         if (valueSpace > 100) {
@@ -115,7 +129,6 @@ class TruthTable extends Component {
             }
             this.writeResult(y);
         }
-
     }
 
     drawVerticalLines = () => {
@@ -146,7 +159,9 @@ class TruthTable extends Component {
     }
 
     and = (x, y) => {
-        return x & y;
+        console.log(x);
+        console.log(y);
+        return x && y;
     }
 
     or = (x, y) => {
