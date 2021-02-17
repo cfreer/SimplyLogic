@@ -1,6 +1,10 @@
 import React, {Component} from 'react';
 
+let numLiterals, ctx, value, parsed, literals, rows,
+    topLeft, valueSpace, literalList, values, middle;
+
 class TruthTable extends Component {
+
 
     constructor(props) {
         super(props);
@@ -12,81 +16,121 @@ class TruthTable extends Component {
     }
 
     componentDidUpdate() {
-        this.drawTruthTable(this.props.value, this.props.parsed, this.props.literals);
+        value = this.props.value;
+        parsed = this.props.parsed;
+        literals = this.props.literals;
+        this.drawTruthTable();
     }
 
-    drawTruthTable = (value, parsed, literals) => {
+    drawTruthTable = () => {
         if (this.props.submitted && literals !== null) {
+            numLiterals = literals.size;
             let canvas = this.canvas.current;
-            let ctx = canvas.getContext('2d');
+            ctx = canvas.getContext('2d');
+            // clears drawing board
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.strokeStyle = 'black';
-            let numLiterals = literals.size;
+            ctx.lineWidth = 2;
+
             let numSpaces = numLiterals + 1;
-            let topLeft = (this.state.width - numSpaces * 100) / 2;
-            let firstLineX = topLeft + 100;
-            let rows = Math.pow(2, numLiterals);
-            for (let i = 0; i < numLiterals; i++) {
-                let startX = firstLineX + 100 * i;
-                let startY = 0;
-                let endX = startX;
-                let endY = startY + (rows + 1) * 30 + 10;
-                ctx.beginPath();
-                ctx.moveTo(startX, startY);
-                ctx.lineTo(endX, endY);
-                ctx.lineWidth = 2;
-                ctx.stroke();
+            topLeft = (this.state.width - numSpaces * 100) / 2;
+            rows = Math.pow(2, numLiterals);
+            this.drawVerticalLines();
+
+            valueSpace = 10 * value.length + 50;
+            this.drawHorizontalLine();
+
+            this.writeLiterals();
+
+            this.writeTruthValues();
+
+            this.writeResult();
+        }
+    };
+
+    writeResult = (y) => {
+        this.writeText({text: 'T', x: middle, y: y});
+        for (let i = 0; i < rows; i++) {
+
+        }
+    }
+
+    writeLiterals = () => {
+        literalList = [];
+        const itr = literals.values();
+        let literal = itr.next();
+        let x = topLeft + 45;
+        while (!literal.done) {
+            this.writeText({text: literal.value, x: x, y: 5});
+            literal = itr.next();
+            literalList.push(literal);
+            x += 98;
+        }
+        if (valueSpace > 100) {
+            x -= 20;
+        } else {
+            x -= 47;
+            x += (100 - 10 * value.length) / 2;
+        }
+        this.writeText({text: value, x: x, y: 5});
+    }
+
+    drawHorizontalLine = () => {
+        let startX = topLeft;
+        let startY = 30;
+        let endX = startX + 100 * numLiterals
+        if (valueSpace > 100) {
+            middle = endX + valueSpace / 2 - 5;
+            endX += valueSpace;
+        } else {
+            middle = endX + 45;
+            endX += 100;
+        }
+        let endY = startY;
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(endX, endY);
+        ctx.stroke();
+    }
+
+    writeTruthValues = () => {
+        let firstX = topLeft + 45;
+        let y = 15;
+        // row
+        for (let i = 0; i < rows; i++) {
+            y += 30;
+            values = new Map();
+            // col
+            for (let j = 0; j < numLiterals; j++) {
+                let divisor = Math.pow(2, numLiterals - j - 1);
+                let group = Math.floor(i / divisor);
+                // first half of rows
+                if (group % 2 === 0) {
+                    this.writeText({text: 'T', x: firstX + 98 * j, y: y});
+                    values.set(literalList[j], true);
+                } else {
+                    this.writeText({text: 'F', x: firstX + 98 * j, y: y});
+                    values.set(literalList[j], false);
+                }
             }
-            let startX = topLeft;
-            let startY = 30;
-            let valueSpace = 10 * value.length + 50;
-            let endX = startX + 100 * numLiterals
-            if (valueSpace > 100) {
-                endX += valueSpace;
-            } else {
-                endX += 100;
-            }
-            let endY = startY;
+            this.writeResult(y);
+        }
+
+    }
+
+    drawVerticalLines = () => {
+        let firstLineX = topLeft + 100;
+        for (let i = 0; i < numLiterals; i++) {
+            let startX = firstLineX + 100 * i;
+            let startY = 0;
+            let endX = startX;
+            let endY = startY + (rows + 1) * 30 + 10;
             ctx.beginPath();
             ctx.moveTo(startX, startY);
             ctx.lineTo(endX, endY);
-            ctx.lineWidth = 2;
             ctx.stroke();
-            const itr = literals.values();
-            let literal = itr.next();
-            let x = topLeft + 45;
-            let firstX = x;
-            while (!literal.done) {
-                this.writeText({text: literal.value, x: x, y: 5});
-                literal = itr.next();
-                x += 98;
-            }
-            if (valueSpace > 100) {
-                x -= 20;
-            } else {
-                x -= 47;
-                x += (100 - 10 * value.length) / 2;
-            }
-            this.writeText({text: value, x: x, y: 5});
-            // writes truth values
-            let y = 15;
-            // row
-            for (let i = 0; i < rows; i++) {
-                y += 30;
-                // col
-                for (let j = 0; j < numLiterals; j++) {
-                    let divisor = Math.pow(2, numLiterals - j - 1);
-                    let group = Math.floor(i / divisor);
-                    // first half of rows
-                    if (group % 2 === 0) {
-                        this.writeText({text: 'T', x: firstX + 98 * j, y: y});
-                    } else {
-                        this.writeText({text: 'F', x: firstX + 98 * j, y: y});
-                    }
-                }
-            }
         }
-    };
+    }
 
     writeText = (info, style = {}) => {
         const {text, x, y} = info;
@@ -99,6 +143,18 @@ class TruthTable extends Component {
         ctx.fillStyle = color;
         ctx.fillText(text, x, y);
         ctx.stroke();
+    }
+
+    and = (x, y) => {
+        return x & y;
+    }
+
+    or = (x, y) => {
+        return x | y;
+    }
+
+    not = (x) => {
+        return !x;
     }
 
     render() {

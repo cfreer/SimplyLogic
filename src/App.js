@@ -64,8 +64,11 @@ class App extends Component {
             <div align="center">
                 <b><font size="6">Simply Logic</font></b>
                 <br/>
-                <p><font size="4">Enter a sentence you want to
-                    generate a truth table for:</font></p>
+                <p><font size="4">
+                    Key: and: &, or: v, not: ~ <br/>
+                    Enter a sentence you want to
+                    generate a truth table for:
+                </font></p>
                 <TextBox handleChange={this.handleChange} value={this.state.textValue}/>
                 <button onClick={() => {
                     this.handleSubmit();
