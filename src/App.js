@@ -41,6 +41,9 @@ class App extends Component {
         })
         let value = this.state.value.toUpperCase()
         value = value.replace("V", "v");
+        if (!this.isValidParentheses(value)) {
+            this.throwError("parentheses");
+        }
         let parsed = this.parseValue(value);
         let literals = this.getLiterals(parsed);
         this.setState({
@@ -66,8 +69,7 @@ class App extends Component {
             } else if (next3 === "<->") {
                 result[index] = next3;
                 i += 2;
-            }
-            else {
+            } else {
                 result[index] = c;
             }
             index++;
@@ -75,20 +77,51 @@ class App extends Component {
         return result;
     };
 
+    isBinary = (c) => {
+        return c === "&" || c === "v" || c === "->" || c === "<->";
+    }
+
     isValid = (prev, c, next) => {
         let isValidPrev = this.isValidPrev(prev);
         let isValidNext = this.isValidNext(next);
         if (c === "~" || c === "(") {
-            return isValidNext;
-        } else if (c === "&" || c === "v" || c === "->" || c === "<->") {
+            return isValidNext && (this.isBinary(prev) ||
+                prev === "~" || prev === undefined || prev === "(");
+        } else if (this.isBinary(c)) {
             return isValidPrev && isValidNext;
         } else if (c === ")") {
             return isValidPrev;
         }
     }
 
+    isValidParentheses = (value) => {
+        if (!value.includes("(") && !value.includes(")")) {
+            return true;
+        }
+        let s = [];
+        for (let i = 0; i < value.length; i++) {
+            let c = value.charAt(i);
+            if (c === '(') {
+                s.push(c);
+            } else {
+                if (s.length === 0) {
+                    return false;
+                } else {
+                    let top = s[s.length - 1];
+                    if (c === ')' && top === '(') {
+                        s.pop();
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        }
+        return s.length === 0;
+    }
+
     getLiterals = (parsed) => {
         let result = new Set();
+        let incorrectSym = new Set();
         for (let i = 0; i < parsed.length; i++) {
             let c = parsed[i];
             let prev = parsed[i - 1];
@@ -99,9 +132,9 @@ class App extends Component {
                     break;
                 }
                 result.add(c);
-            } else if (!bool.includes(c)) {
+            } else if (!bool.includes(c) && !incorrectSym.has(c)) {
                 this.throwError(c);
-                break;
+                incorrectSym.add(c);
             } else if (!this.isValid(prev, c, next)) {
                 this.throwError("syntax");
                 break;
@@ -131,7 +164,9 @@ class App extends Component {
         this.setState({
             error: true
         });
-        if (c === "symbols") {
+        if (c === "parentheses") {
+            alert("Incorrect format: Parentheses don't match.")
+        } else if (c === "symbols") {
             alert("Incorrect format: Cannot have more than one symbol in a row; " +
                 "Symbols must be one letter.")
         } else if (c === "syntax") {
