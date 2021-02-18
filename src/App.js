@@ -40,7 +40,7 @@ class App extends Component {
             error: false
         })
         let value = this.state.value.toUpperCase()
-        value = value.replace("V", "v");
+        value = value.replaceAll("V", "v");
         if (!this.isValidParentheses(value)) {
             this.throwError("parentheses");
         }
