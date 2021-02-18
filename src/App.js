@@ -101,18 +101,18 @@ class App extends Component {
         let s = [];
         for (let i = 0; i < value.length; i++) {
             let c = value.charAt(i);
-            if (c === '(') {
+            if (c === "(") {
                 s.push(c);
-            } else {
+            }
+            if (c === ')') {
                 if (s.length === 0) {
                     return false;
+                }
+                let last = s[s.length - 1];
+                if (c === ')' && last === '(') {
+                    s.pop();
                 } else {
-                    let top = s[s.length - 1];
-                    if (c === ')' && top === '(') {
-                        s.pop();
-                    } else {
-                        return false;
-                    }
+                    return false;
                 }
             }
         }
