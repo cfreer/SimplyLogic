@@ -25,7 +25,9 @@ class TruthTable extends Component {
     drawTruthTable = () => {
         let canvas = this.canvas.current;
         ctx = canvas.getContext('2d');
-        if (this.props.submitted && literals.size > 0) {
+        if (this.props.error) {
+            ctx.clearRect(0, 0, this.state.width, this.state.height);
+        } else if (this.props.submitted && literals !== null) {
             numLiterals = literals.size;
             // clears drawing board
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -39,14 +41,9 @@ class TruthTable extends Component {
 
             valueSpace = 10 * value.length + 50;
             this.drawHorizontalLine();
-
             this.writeLiterals();
-
             this.writeTruthValues();
-
             this.writeResult();
-        } else if (this.props.submitted) {
-            ctx.clearRect(0, 0, this.state.width, this.state.height);
         }
     };
 
